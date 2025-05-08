@@ -1,0 +1,13 @@
+.ipynb-checkpoints
+*.geojson
+*.nc
+*.tiff
+*.tif
+*.html
+*.png
+*cleared.ipynb
+workshop-pypsa-4tso/tmp/
+workshop-pypsa-4tso/_build/
+workshop-pypsa-4tso/tmp.csv
+workshop-pypsa-4tso/data
+data/
