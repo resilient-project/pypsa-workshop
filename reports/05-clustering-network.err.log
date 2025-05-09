@@ -24,7 +24,7 @@ busmap_kmeans = n.cluster.busmap_by_kmeans(bus_weightings=weighting, n_clusters=
 
 [31m---------------------------------------------------------------------------[39m
 [31mModuleNotFoundError[39m                       Traceback (most recent call last)
-[36mCell[39m[36m [39m[32mIn[4][39m[32m, line 1[39m
+[36mCell[39m[36m [39m[32mIn[7][39m[32m, line 1[39m
 [32m----> [39m[32m1[39m busmap_kmeans = [43mn[49m[43m.[49m[43mcluster[49m[43m.[49m[43mbusmap_by_kmeans[49m[43m([49m[43mbus_weightings[49m[43m=[49m[43mweighting[49m[43m,[49m[43m [49m[43mn_clusters[49m[43m=[49m[32;43m90[39;49m[43m)[49m
 
 [36mFile [39m[32m/opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/pypsa/clustering/__init__.py:34[39m, in [36mClusteringAccessor.busmap_by_kmeans[39m[34m(self, *args, **kwargs)[39m

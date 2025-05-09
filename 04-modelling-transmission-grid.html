@@ -453,7 +453,7 @@ document.write(`
 <p class="admonition-title">Note</p>
 <p>If you have not yet set up Python on your computer, you can execute this tutorial in your browser via <a class="reference external" href="https://colab.research.google.com/">Google Colab</a>. Click on the rocket in the top right corner and launch “Colab”. If that doesn’t work download the <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> file and import it in <a class="reference external" href="https://colab.research.google.com/">Google Colab</a>.</p>
 <p>Then install the following packages by executing the following command in a Jupyter cell at the top of the notebook.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>!pip<span class="w"> </span>install<span class="w"> </span>geopandas<span class="w"> </span>pypsa<span class="w"> </span>numpy<span class="w"> </span>shapely
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>!pip<span class="w"> </span>install<span class="w"> </span>folium<span class="w"> </span>geopandas<span class="w"> </span>pandas<span class="w"> </span>pypsa<span class="w"> </span>mapclassify<span class="w"> </span>matplotlib<span class="w"> </span>numpy<span class="w"> </span>shapely
 </pre></div>
 </div>
 </div>
@@ -523,6 +523,14 @@ document.write(`
 </section>
 <section id="exploring-the-data-base-network">
 <h2>Exploring the data (base network)<a class="headerlink" href="#exploring-the-data-base-network" title="Link to this heading">#</a></h2>
+<p>For execution of the notebook in Google Colab, comment out and run:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># !pip install folium geopandas pandas pypsa mapclassify matplotlib numpy shapely</span>
+</pre></div>
+</div>
+</div>
+</div>
 <p>This is an interactive part of the workshop, you can follow the live demonstration or try out the notebook yourself.</p>
 <p>First, we need to import <code class="docutils literal notranslate"><span class="pre">geopandas</span></code>, <code class="docutils literal notranslate"><span class="pre">folium</span></code>, and <code class="docutils literal notranslate"><span class="pre">pypsa</span></code>.</p>
 <div class="cell docutils container">
@@ -800,7 +808,7 @@ AC Line types: [&#39;Al/St 240/40 2-bundle 220.0&#39;, &#39;Al/St 240/40 3-bundl
 <span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
 
 <span class="ne">ImportError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">11</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="nb">map</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">b_popup</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="ne">----&gt; </span><span class="mi">4</span> <span class="nb">map</span> <span class="o">=</span> <span class="n">stations_polygon</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="n">popup</span><span class="o">=</span><span class="n">b_popup</span><span class="p">)</span>
@@ -848,7 +856,7 @@ AC Line types: [&#39;Al/St 240/40 2-bundle 220.0&#39;, &#39;Al/St 240/40 3-bundl
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Line&quot;</span><span class="p">,</span> <span class="s2">&quot;Link&quot;</span><span class="p">]</span>
-<span class="n">n</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">)</span>
+<span class="n">n</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

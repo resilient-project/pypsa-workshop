@@ -446,7 +446,7 @@ document.write(`
 <p class="admonition-title">Note</p>
 <p>If you have not yet set up Python on your computer, you can execute this tutorial in your browser via <a class="reference external" href="https://colab.research.google.com/">Google Colab</a>. Click on the rocket in the top right corner and launch “Colab”. If that doesn’t work download the <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> file and import it in <a class="reference external" href="https://colab.research.google.com/">Google Colab</a>.</p>
 <p>Then install the following packages by executing the following command in a Jupyter cell at the top of the notebook.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>!pip<span class="w"> </span>install<span class="w"> </span>cartopy<span class="w"> </span>geopandas<span class="w"> </span>pandas<span class="w"> </span>pypsa<span class="w"> </span>matplotlib<span class="w"> </span>numpy
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>!pip<span class="w"> </span>install<span class="w"> </span>folium<span class="w"> </span>geopandas<span class="w"> </span>pandas<span class="w"> </span>pypsa<span class="w"> </span>mapclassify<span class="w"> </span>matplotlib<span class="w"> </span>numpy<span class="w"> </span>shapely
 </pre></div>
 </div>
 </div>
@@ -484,19 +484,46 @@ document.write(`
 </section>
 <section id="exploring-the-clustering-methods">
 <h2>Exploring the clustering methods<a class="headerlink" href="#exploring-the-clustering-methods" title="Link to this heading">#</a></h2>
+<p>For execution of the notebook in Google Colab, comment out and run:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># !pip install folium geopandas pandas pypsa mapclassify matplotlib numpy shapely</span>
+</pre></div>
+</div>
+</div>
+</div>
 <p>Note that in PyPSA-Eur, all of these steps are built into the <code class="docutils literal notranslate"><span class="pre">cluster_network</span></code> Snakemake rule. For illustrative purposes, we go through the underlying functions, step by step in this notebook. First, we import the example PyPSA network file and built-in functions from the PyPSA package.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pypsa</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">network_path</span> <span class="o">=</span> <span class="s2">&quot;resources/base.nc&quot;</span>
-<span class="n">n</span> <span class="o">=</span> <span class="n">pypsa</span><span class="o">.</span><span class="n">Network</span><span class="p">(</span><span class="n">network_path</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/resilient-project/pypsa-workshop/main/pypsa-workshop/resources/&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>To enable execution from Google Colab, we use requests to retrieve the network file. This detour is normally not needed for offline use.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="s2">&quot;base.nc&quot;</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">resources</span> <span class="o">+</span> <span class="n">network</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">pypsa</span><span class="o">.</span><span class="n">Network</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -541,7 +568,7 @@ dtype: int64
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">busmap_kmeans</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">busmap_by_kmeans</span><span class="p">(</span><span class="n">bus_weightings</span><span class="o">=</span><span class="n">weighting</span><span class="p">,</span> <span class="n">n_clusters</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
 
 <span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/pypsa/clustering/__init__.py:34,</span> in <span class="ni">ClusteringAccessor.busmap_by_kmeans</span><span class="nt">(self, *args, **kwargs)</span>
@@ -631,7 +658,7 @@ dtype: int64
 <p>Let’s explore the clustered network.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nc_kmeans</span><span class="o">.</span><span class="n">explore</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nc_kmeans</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">explore</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -646,8 +673,8 @@ dtype: int64
     <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;projection&quot;</span><span class="p">:</span> <span class="n">ccrs</span><span class="o">.</span><span class="n">EqualEarth</span><span class="p">()},</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="n">plot_kwrgs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">bus_sizes</span><span class="o">=</span><span class="mf">5e-3</span><span class="p">,</span> <span class="n">line_widths</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">link_widths</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
-<span class="n">n</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Original network&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwrgs</span><span class="p">)</span>
-<span class="n">nc_kmeans</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Clustered network using K-Means&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwrgs</span><span class="p">)</span>
+<span class="n">n</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Original network&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwrgs</span><span class="p">)</span>
+<span class="n">nc_kmeans</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Clustered network using K-Means&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwrgs</span><span class="p">)</span>
 <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -849,9 +876,19 @@ dtype: int64
 <p>We import the network and administrative shape file for illustrative purposes</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">network_adm_path</span> <span class="o">=</span> <span class="s2">&quot;resources/base_s_adm_elec_.nc&quot;</span>
-<span class="n">nc_adm</span> <span class="o">=</span> <span class="n">pypsa</span><span class="o">.</span><span class="n">Network</span><span class="p">(</span><span class="n">network_adm_path</span><span class="p">)</span>
-<span class="n">admin_shapes</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;resources/admin_shapes.geojson&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">network_adm</span> <span class="o">=</span> <span class="s2">&quot;base_s_adm_elec_.nc&quot;</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">network_adm</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">resources</span> <span class="o">+</span> <span class="n">network_adm</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nc_adm</span> <span class="o">=</span> <span class="n">pypsa</span><span class="o">.</span><span class="n">Network</span><span class="p">(</span><span class="n">network_adm</span><span class="p">)</span>
+<span class="n">admin_shapes</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">resources</span> <span class="o">+</span> <span class="s2">&quot;admin_shapes.geojson&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -866,12 +903,12 @@ dtype: int64
 <span class="p">)</span>
 
 <span class="n">plot_kwrgs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">bus_sizes</span><span class="o">=</span><span class="mf">5e-3</span><span class="p">,</span> <span class="n">line_widths</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">link_widths</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
-<span class="n">n</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Original network&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwrgs</span><span class="p">)</span>
+<span class="n">n</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Original network&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwrgs</span><span class="p">)</span>
 
 <span class="c1"># Adding the bidding zones</span>
 <span class="n">admin_shapes</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="n">epsg</span><span class="o">=</span><span class="mi">8857</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
 <span class="n">admin_shapes</span><span class="o">.</span><span class="n">to_crs</span><span class="p">(</span><span class="n">epsg</span><span class="o">=</span><span class="mi">8857</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
-<span class="n">nc_adm</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Network clustered by NUTS regions&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwrgs</span><span class="p">)</span>
+<span class="n">nc_adm</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Network clustered by NUTS regions&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwrgs</span><span class="p">)</span>
 
 <span class="n">ax</span><span class="o">.</span><span class="n">set_extent</span><span class="p">([</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">3</span><span class="p">]],</span> <span class="n">crs</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">())</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">set_extent</span><span class="p">([</span><span class="n">bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bounds</span><span class="p">[</span><span class="mi">3</span><span class="p">]],</span> <span class="n">crs</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">())</span>
