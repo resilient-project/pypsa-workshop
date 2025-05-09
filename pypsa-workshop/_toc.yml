@@ -9,6 +9,8 @@ chapters:
 - file: 01-workshop-pypsa-intro
 - file: 02-workshop-pypsa-more-features
 - file: 03-workshop-pypsa-sc-expansion
+- file: 04-modelling-transmission-grid
+- file: 05-clustering-network
 - file: config-small-system
   title: config-small-system.yaml
 - file: config-big-system
