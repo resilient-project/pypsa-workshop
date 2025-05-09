@@ -4,13 +4,13 @@
 format: jb-book
 root: intro
 chapters:
-- file: annex-python
-- file: annex-pandas
 - file: slides
   title: Slide deck PyPSA(-Eur)
-# - file: 01-workshop-pypsa-intro
-# - file: 02-workshop-pypsa-more-features
-# - file: 03-workshop-pypsa-sc-expansion
+- file: annex-python
+- file: annex-pandas
+- file: 01-workshop-pypsa-intro
+- file: 02-workshop-pypsa-more-features
+- file: 03-workshop-pypsa-sc-expansion
 # - file: 05-config
 #   title: Exploring MD (config.yaml)
 # - file: 05-scenarios
