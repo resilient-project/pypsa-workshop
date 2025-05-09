@@ -10,7 +10,7 @@ More about the RESILIENT project: https://resilient-project.github.io/
 
 ## How to use this material?
 
-See instructions in the [workshop intro page](https://irieo.github.io/workshop-pypsa-4tso/intro.html#).
+See instructions in the [workshop intro page](https://irieo.github.io/pypsa-workshop/intro.html#).
 
 ## Credits
 

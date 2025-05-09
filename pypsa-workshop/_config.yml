@@ -26,8 +26,8 @@ latex:
 
 # Information about where the book exists on the web
 repository:
-  url: https://github.com/Irieo/workshop-pypsa-4tso  # Online location of your book
-  path_to_book: workshop-pypsa-4tso  # Optional path to your book, relative to the repository root
+  url: https://github.com/resilient-project/pypsa-workshop  # should match GitHub repo name
+  path_to_book: pypsa-workshop  # Optional path to your book, relative to the repository root
   branch: main  # Which branch of the repository should be used when creating links (optional)
 
 # Add GitHub buttons to your book

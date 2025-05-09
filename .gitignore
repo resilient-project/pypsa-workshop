@@ -6,8 +6,8 @@
 *.html
 *.png
 *cleared.ipynb
-workshop-pypsa-4tso/tmp/
-workshop-pypsa-4tso/_build/
-workshop-pypsa-4tso/tmp.csv
-workshop-pypsa-4tso/data
+pypsa-workshop/tmp/
+pypsa-workshop/_build/
+pypsa-workshop/tmp.csv
+pypsa-workshop/data
 data/
