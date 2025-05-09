@@ -26,5 +26,6 @@ dependencies:
 - pre-commit
 - geopandas
 - shapely
+- requests
 - pip:
   - highspy

@@ -21,3 +21,4 @@ numexpr>2.8.5
 pre-commit
 geopandas
 shapely
+requests
