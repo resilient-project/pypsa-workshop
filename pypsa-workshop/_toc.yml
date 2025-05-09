@@ -9,9 +9,9 @@ chapters:
 - file: 01-workshop-pypsa-intro
 - file: 02-workshop-pypsa-more-features
 - file: 03-workshop-pypsa-sc-expansion
-- file: 05-config-small-system
+- file: config-small-system
   title: config-small-system.yaml)
-- file: 05-config-big-system
+- file: config-big-system
   title: config-big-system.yaml)
 - file: annex-python
 - file: annex-pandas
