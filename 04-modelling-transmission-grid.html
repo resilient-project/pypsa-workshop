@@ -1,0 +1,1063 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Modelling the transmission grid in PyPSA-Eur &#8212; PyPSA workshop 4TSO</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '04-modelling-transmission-grid';</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Clustering the network" href="05-clustering-network.html" />
+    <link rel="prev" title="Advanced models in pypsa: capacity expansion planning with sector coupling" href="03-workshop-pypsa-sc-expansion.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo-secondary-light-pypsa.svg" class="logo__image only-light" alt="PyPSA workshop 4TSO - Home"/>
+    <script>document.write(`<img src="_static/logo-secondary-light-pypsa.svg" class="logo__image only-dark" alt="PyPSA workshop 4TSO - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Welcome to the workshop!
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="slides.html">Slide deck PyPSA(-Eur)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="01-workshop-pypsa-intro.html">Introduction to <code class="docutils literal notranslate"><span class="pre">pypsa</span></code> and <code class="docutils literal notranslate"><span class="pre">linopy</span></code>: a simple dispatch problem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02-workshop-pypsa-more-features.html">More <code class="docutils literal notranslate"><span class="pre">pypsa</span></code> features: more complex dispatch problems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-workshop-pypsa-sc-expansion.html">Advanced models in <code class="docutils literal notranslate"><span class="pre">pypsa</span></code>: capacity expansion planning with sector coupling</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Modelling the transmission grid in PyPSA-Eur</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-clustering-network.html">Clustering the network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config-small-system.html">config-small-system.yaml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config-big-system.html">config-big-system.yaml</a></li>
+<li class="toctree-l1"><a class="reference internal" href="annex-python.html">Annex: Intro to the basics of <code class="docutils literal notranslate"><span class="pre">Python</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="annex-pandas.html">Annex: Tabular data analysis with <code class="docutils literal notranslate"><span class="pre">pandas</span></code></a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/resilient-project/pypsa-workshop/blob/main/pypsa-workshop/04-modelling-transmission-grid.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch on Colab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img alt="Colab logo" src="_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/resilient-project/pypsa-workshop" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/resilient-project/pypsa-workshop/issues/new?title=Issue%20on%20page%20%2F04-modelling-transmission-grid.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/04-modelling-transmission-grid.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Modelling the transmission grid in PyPSA-Eur</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#background">Background</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">Motivation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#benefits-of-our-implementation">Benefits of our implementation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reconstructing-the-european-high-voltage-grid-from-openstreetmap">Reconstructing the European high-voltage grid from OpenStreetMap</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#process-diagram">Process diagram</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bus-clustering">Bus clustering</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#validation-and-metrics">Validation and metrics</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exploring-the-data-base-network">Exploring the data (base network)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interactive-map">Interactive map</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="modelling-the-transmission-grid-in-pypsa-eur">
+<h1>Modelling the transmission grid in PyPSA-Eur<a class="headerlink" href="#modelling-the-transmission-grid-in-pypsa-eur" title="Link to this heading">#</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you have not yet set up Python on your computer, you can execute this tutorial in your browser via <a class="reference external" href="https://colab.research.google.com/">Google Colab</a>. Click on the rocket in the top right corner and launch “Colab”. If that doesn’t work download the <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code> file and import it in <a class="reference external" href="https://colab.research.google.com/">Google Colab</a>.</p>
+<p>Then install the following packages by executing the following command in a Jupyter cell at the top of the notebook.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>!pip<span class="w"> </span>install<span class="w"> </span>geopandas<span class="w"> </span>pypsa<span class="w"> </span>numpy<span class="w"> </span>shapely
+</pre></div>
+</div>
+</div>
+<p><strong>In this notebook, we present and explore how the high-voltage electricity grid (AC 220 kV to 750 kV, all HVDC lines) are modelled in PyPSA-Eur.</strong></p>
+<section id="background">
+<h2>Background<a class="headerlink" href="#background" title="Link to this heading">#</a></h2>
+<section id="motivation">
+<h3>Motivation<a class="headerlink" href="#motivation" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Conclusions drawn from energy system models only as good as underlying data and assumptions</p></li>
+<li><p>Modelling existing infrastructure is essential</p></li>
+<li><p>Geotagged, high-voltage electricity grid data not officially available to the public</p></li>
+<li><p><a class="reference external" href="https://www.entsoe.eu/data/map/">ENTSO-E</a> and some TSOs do provide public data in form of online maps or simplified datasets, however each come with own limitations (e.g. stylised geographic information), no open licence, potentially outdated</p></li>
+<li><p>Notable projects and datasets modelling the high-voltage grid in Europe include (alphabetical order):</p>
+<ul>
+<li><p><a class="reference internal" href="#references"><span class="xref myst">50Hertz Static Grid Model</span></a></p></li>
+<li><p><a class="reference internal" href="#references"><span class="xref myst">ELMOD</span></a></p></li>
+<li><p><a class="reference internal" href="#references"><span class="xref myst">ELMOD-DE</span></a></p></li>
+<li><p><a class="reference internal" href="#references"><span class="xref myst">Hutcheon &amp; Bialek</span></a></p></li>
+<li><p><a class="reference internal" href="#references"><span class="xref myst">Jao Static Grid Model (no geospatial information)</span></a></p></li>
+<li><p><a class="reference internal" href="#references"><span class="xref myst">PyPSA-Eur (previously based on ENTSO-E online map)</span></a></p></li>
+<li><p><a class="reference internal" href="#references"><span class="xref myst">osmTGmod</span></a></p></li>
+<li><p><a class="reference internal" href="#references"><span class="xref myst">SciGrid (Power)</span></a></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="benefits-of-our-implementation">
+<h3>Benefits of our implementation<a class="headerlink" href="#benefits-of-our-implementation" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Reconstruction of the European high-voltage grid based on entirely public data</p></li>
+<li><p>Clear licensing Open Data Commons Open Database (ODbL 1.0)</p></li>
+<li><p>Always up to date and easy to maintain by accessing the OpenStreetMap Overpass turbo API</p></li>
+<li><p>Open (.csv) file format and standardised parameters, allows use outside of PyPSA-Eur</p></li>
+<li><p>Transparent, easy-to-reproduce workflow</p></li>
+<li><p>Compatibility with other PyPSA and PyPSA-Eur functions such as Dynamic Line Rating, enabling planned transmission projects (TYNDP, NEP)</p></li>
+<li><p>All exact geometries and unique OSM ids are preserved. For example, a component with the identifier <a class="reference external" href="https://www.openstreetmap.org/relation/16213216">relation/16213216</a> can be accessed via <a class="reference external" href="https://www.openstreetmap.org/relation/16213216">https://www.openstreetmap.org/relation/16213216</a></p></li>
+</ul>
+</section>
+</section>
+<section id="reconstructing-the-european-high-voltage-grid-from-openstreetmap">
+<h2>Reconstructing the European high-voltage grid from OpenStreetMap<a class="headerlink" href="#reconstructing-the-european-high-voltage-grid-from-openstreetmap" title="Link to this heading">#</a></h2>
+<p>The following section gives an overview of how a PyPSA-ready grid dataset is created from OpenStreetMap data. You can read the open-access <strong>full paper</strong> here:</p>
+<p>Xiong, B., Fioriti, D., Neumann, F., Riepin, I., Brown, T. <strong>Modelling the high-voltage grid using open data for Europe and beyond.</strong> Sci Data 12, 277. <a class="reference external" href="https://doi.org/10.1038/s41597-025-04550-7">https://doi.org/10.1038/s41597-025-04550-7</a> (2025). <a class="reference external" href="https://www.nature.com/articles/s41597-025-04550-7">https://www.nature.com/articles/s41597-025-04550-7</a></p>
+<section id="overview">
+<h3>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h3>
+<p>Map of the OSM-based European high-voltage grid. Map generated using prebuilt network published on <a class="reference internal" href="#references"><span class="xref myst">Zenodo</span></a>.</p>
+<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41597-025-04550-7/MediaObjects/41597_2025_4550_Fig6_HTML.png" width="500px" /></section>
+<section id="process-diagram">
+<h3>Process diagram<a class="headerlink" href="#process-diagram" title="Link to this heading">#</a></h3>
+<p><strong>Process diagram</strong> depicting the creation of the European high-voltage grid from OSM data, implemented through individual <a class="reference internal" href="#references"><span class="xref myst">Snakemake rules</span></a>.</p>
+<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41597-025-04550-7/MediaObjects/41597_2025_4550_Fig1_HTML.png" alt="Process diagram: Snakemake" width="700px" /><p>In <strong>Step 3</strong>, a topologically and electrically network is then built using a sequence of sub-processes.</p>
+<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41597-025-04550-7/MediaObjects/41597_2025_4550_Fig4_HTML.png" alt="Process diagram: Schematic" width="700px"></section>
+<section id="bus-clustering">
+<h3>Bus clustering<a class="headerlink" href="#bus-clustering" title="Link to this heading">#</a></h3>
+<p><strong>Example of bus clustering.</strong> The darkred shape represents the union of the buffer around virtual buses and an original OSM substation polygon (yellow). The bright red dot represents the internal point of the union, this point sets the geographic coordinates of the obtained bus. Lines and cables are connected to the respective voltage level within the substation, transformers are added to connect buses of different voltage levels.</p>
+<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41597-025-04550-7/MediaObjects/41597_2025_4550_Fig5_HTML.png" alt="Bus clustering" width="700px"/></section>
+<section id="validation-and-metrics">
+<h3>Validation and metrics<a class="headerlink" href="#validation-and-metrics" title="Link to this heading">#</a></h3>
+<p><strong>Comparing the OSM-based grid to ENTSO-map</strong>.</p>
+<p>Based on ENTSO-E’s 2023 inventory of transmission, we compare the total route (a) and circuit lengths (b) of AC lines and cables on a per country level. We find that our transmission grid based on OSM data is in agreement with the ENTSO-E inventory. Calculating the Pearson correlation coefficient for both route and circuit lengths between the official statistics and the respective transmission grid representations, we see an overall improvement from the ENTSO-E map (<span class="math notranslate nohighlight">\(\rho_{routes}=0.9489\)</span> and <span class="math notranslate nohighlight">\(\rho_{circuits}=0.9862\)</span>) to OSM (<span class="math notranslate nohighlight">\(\rho_{routes}=0.9575\)</span> and <span class="math notranslate nohighlight">\(\rho_{circuits}=0.9980\)</span>) in the reproduction of the high-voltage grid (220 to 750 kV). One of the key reasons for these improvements is the much higher level of geographic detail of lines and cables in the OSM-based transmission grid compared to the stylised lines on ENTSO-E’s interactive map. We observe larger discrepancies for Sweden, where both transmission grid representations seem to overestimate the total lengths of the inventory.</p>
+<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41597-025-04550-7/MediaObjects/41597_2025_4550_Fig7_HTML.png" alt="Comparison of route and circuit lengths" width="700px"/><p><strong>Weighted degree distribution</strong> before and after clustering (NUTS2).</p>
+<p>We weight the degree by the number of parallel circuits to account for potential different representations of lines and links connecting the same two buses (e.g., single lines with multiple number of circuits or multiple lines with single circuits).</p>
+<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41597-025-04550-7/MediaObjects/41597_2025_4550_Fig9_HTML.png" alt="WEighted degree distribution" width="700px"/><p><strong>Comparison with public, geocoded 50Hertz static grid model</strong>.</p>
+<p>Comparison of AC line/cable resistance and reactance between the OSM-based transmission grid and reference 50Hertz static grid model. <span class="math notranslate nohighlight">\(n_{osm}\)</span> and <span class="math notranslate nohighlight">\(n_{sgm}\)</span> refer to the number of parallel circuits for a distinct line in each network, while <span class="math notranslate nohighlight">\(\Delta i_{nom}\)</span> refers to the relative change in underlying nominal current.</p>
+<img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41597-025-04550-7/MediaObjects/41597_2025_4550_Fig18_HTML.png" alt="Metric comparison" width="700px"><img src="https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fs41597-025-04550-7/MediaObjects/41597_2025_4550_Fig17_HTML.png" alt="Comparison with 50Hertz SGM" width="700px"/></section>
+</section>
+<section id="exploring-the-data-base-network">
+<h2>Exploring the data (base network)<a class="headerlink" href="#exploring-the-data-base-network" title="Link to this heading">#</a></h2>
+<p>This is an interactive part of the workshop, you can follow the live demonstration or try out the notebook yourself.</p>
+<p>First, we need to import <code class="docutils literal notranslate"><span class="pre">geopandas</span></code>, <code class="docutils literal notranslate"><span class="pre">folium</span></code>, and <code class="docutils literal notranslate"><span class="pre">pypsa</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pypsa</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s import the base network created from the above workflow.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">network_path</span> <span class="o">=</span> <span class="s2">&quot;resources/base.nc&quot;</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">pypsa</span><span class="o">.</span><span class="n">Network</span><span class="p">(</span><span class="n">network_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/xarray/backends/file_manager.py:211,</span> in <span class="ni">CachingFileManager._acquire_with_cache_info</span><span class="nt">(self, needs_lock)</span>
+<span class="g g-Whitespace">    </span><span class="mi">210</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">211</span>     <span class="n">file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_key</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">212</span> <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/xarray/backends/lru_cache.py:56,</span> in <span class="ni">LRUCache.__getitem__</span><span class="nt">(self, key)</span>
+<span class="g g-Whitespace">     </span><span class="mi">55</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">56</span>     <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+<span class="g g-Whitespace">     </span><span class="mi">57</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+<span class="ne">KeyError</span>: [&lt;class &#39;netCDF4._netCDF4.Dataset&#39;&gt;, (&#39;/home/runner/work/pypsa-workshop/pypsa-workshop/pypsa-workshop/resources/base.nc&#39;,), &#39;r&#39;, ((&#39;clobber&#39;, True), (&#39;diskless&#39;, False), (&#39;format&#39;, &#39;NETCDF4&#39;), (&#39;persist&#39;, False)), &#39;85db6c08-5032-448c-b9bb-22425de5715f&#39;]
+
+<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
+
+<span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">network_path</span> <span class="o">=</span> <span class="s2">&quot;resources/base.nc&quot;</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">n</span> <span class="o">=</span> <span class="n">pypsa</span><span class="o">.</span><span class="n">Network</span><span class="p">(</span><span class="n">network_path</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/pypsa/networks.py:332,</span> in <span class="ni">Network.__init__</span><span class="nt">(self, import_name, name, ignore_standard_types, override_components, override_component_attrs, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">330</span>     <span class="bp">self</span><span class="o">.</span><span class="n">import_from_hdf5</span><span class="p">(</span><span class="n">import_name</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">331</span> <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">import_name</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.nc&quot;</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">332</span>     <span class="bp">self</span><span class="o">.</span><span class="n">import_from_netcdf</span><span class="p">(</span><span class="n">import_name</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">333</span> <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">import_name</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.xls&quot;</span><span class="p">,</span> <span class="s2">&quot;.xlsx&quot;</span><span class="p">,</span> <span class="s2">&quot;.xlsm&quot;</span><span class="p">,</span> <span class="s2">&quot;.xlsb&quot;</span><span class="p">)):</span>
+<span class="g g-Whitespace">    </span><span class="mi">334</span>     <span class="bp">self</span><span class="o">.</span><span class="n">import_from_excel</span><span class="p">(</span><span class="n">import_name</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/pypsa/common.py:238,</span> in <span class="ni">deprecated_kwargs.&lt;locals&gt;.deco.&lt;locals&gt;.wrapper</span><span class="nt">(*args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">235</span> <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">236</span> <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">237</span>     <span class="n">rename_kwargs</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">aliases</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">238</span>     <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/pypsa/io.py:1103,</span> in <span class="ni">import_from_netcdf</span><span class="nt">(n, path, skip_time)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1089</span><span class="w"> </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1090</span><span class="sd"> Import network data from netCDF file or xarray Dataset at `path`.</span>
+<span class="g g-Whitespace">   </span><span class="mi">1091</span><span class="sd"> </span>
+<span class="sd">   (...)   1100     Skip reading in time dependent attributes</span>
+<span class="g g-Whitespace">   </span><span class="mi">1101</span><span class="sd"> &quot;&quot;&quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1102</span> <span class="n">basename</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">)</span> <span class="k">else</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+<span class="ne">-&gt; </span><span class="mi">1103</span> <span class="k">with</span> <span class="n">ImporterNetCDF</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">importer</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1104</span>     <span class="n">_import_from_importer</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">importer</span><span class="p">,</span> <span class="n">basename</span><span class="o">=</span><span class="n">basename</span><span class="p">,</span> <span class="n">skip_time</span><span class="o">=</span><span class="n">skip_time</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/pypsa/io.py:574,</span> in <span class="ni">ImporterNetCDF.__init__</span><span class="nt">(self, path)</span>
+<span class="g g-Whitespace">    </span><span class="mi">572</span>     <span class="k">if</span> <span class="n">validators</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)):</span>
+<span class="g g-Whitespace">    </span><span class="mi">573</span>         <span class="n">path</span> <span class="o">=</span> <span class="n">_retrieve_from_url</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+<span class="ne">--&gt; </span><span class="mi">574</span>     <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+<span class="g g-Whitespace">    </span><span class="mi">575</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">576</span>     <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="n">path</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/xarray/backends/api.py:687,</span> in <span class="ni">open_dataset</span><span class="nt">(filename_or_obj, engine, chunks, cache, decode_cf, mask_and_scale, decode_times, decode_timedelta, use_cftime, concat_characters, decode_coords, drop_variables, inline_array, chunked_array_type, from_array_kwargs, backend_kwargs, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">675</span> <span class="n">decoders</span> <span class="o">=</span> <span class="n">_resolve_decoders_kwargs</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">676</span>     <span class="n">decode_cf</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">677</span>     <span class="n">open_backend_dataset_parameters</span><span class="o">=</span><span class="n">backend</span><span class="o">.</span><span class="n">open_dataset_parameters</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>    <span class="mi">683</span>     <span class="n">decode_coords</span><span class="o">=</span><span class="n">decode_coords</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">684</span> <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">686</span> <span class="n">overwrite_encoded_chunks</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;overwrite_encoded_chunks&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">687</span> <span class="n">backend_ds</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">688</span>     <span class="n">filename_or_obj</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">689</span>     <span class="n">drop_variables</span><span class="o">=</span><span class="n">drop_variables</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">690</span>     <span class="o">**</span><span class="n">decoders</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">691</span>     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">692</span> <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">693</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">_dataset_from_backend_dataset</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">694</span>     <span class="n">backend_ds</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">695</span>     <span class="n">filename_or_obj</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>    <span class="mi">705</span>     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">706</span> <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">707</span> <span class="k">return</span> <span class="n">ds</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/xarray/backends/netCDF4_.py:666,</span> in <span class="ni">NetCDF4BackendEntrypoint.open_dataset</span><span class="nt">(self, filename_or_obj, mask_and_scale, decode_times, concat_characters, decode_coords, drop_variables, use_cftime, decode_timedelta, group, mode, format, clobber, diskless, persist, auto_complex, lock, autoclose)</span>
+<span class="g g-Whitespace">    </span><span class="mi">644</span> <span class="k">def</span><span class="w"> </span><span class="nf">open_dataset</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">645</span>     <span class="bp">self</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">646</span>     <span class="n">filename_or_obj</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ReadBuffer</span> <span class="o">|</span> <span class="n">AbstractDataStore</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>    <span class="mi">663</span>     <span class="n">autoclose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">664</span> <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dataset</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">665</span>     <span class="n">filename_or_obj</span> <span class="o">=</span> <span class="n">_normalize_path</span><span class="p">(</span><span class="n">filename_or_obj</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">666</span>     <span class="n">store</span> <span class="o">=</span> <span class="n">NetCDF4DataStore</span><span class="o">.</span><span class="n">open</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">667</span>         <span class="n">filename_or_obj</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">668</span>         <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">669</span>         <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">670</span>         <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">671</span>         <span class="n">clobber</span><span class="o">=</span><span class="n">clobber</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">672</span>         <span class="n">diskless</span><span class="o">=</span><span class="n">diskless</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">673</span>         <span class="n">persist</span><span class="o">=</span><span class="n">persist</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">674</span>         <span class="n">auto_complex</span><span class="o">=</span><span class="n">auto_complex</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">675</span>         <span class="n">lock</span><span class="o">=</span><span class="n">lock</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">676</span>         <span class="n">autoclose</span><span class="o">=</span><span class="n">autoclose</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">677</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">679</span>     <span class="n">store_entrypoint</span> <span class="o">=</span> <span class="n">StoreBackendEntrypoint</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">680</span>     <span class="k">with</span> <span class="n">close_on_error</span><span class="p">(</span><span class="n">store</span><span class="p">):</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/xarray/backends/netCDF4_.py:452,</span> in <span class="ni">NetCDF4DataStore.open</span><span class="nt">(cls, filename, mode, format, group, clobber, diskless, persist, auto_complex, lock, lock_maker, autoclose)</span>
+<span class="g g-Whitespace">    </span><span class="mi">448</span>     <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;auto_complex&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">auto_complex</span>
+<span class="g g-Whitespace">    </span><span class="mi">449</span> <span class="n">manager</span> <span class="o">=</span> <span class="n">CachingFileManager</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">450</span>     <span class="n">netCDF4</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span>
+<span class="g g-Whitespace">    </span><span class="mi">451</span> <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">452</span> <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">manager</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="n">lock</span><span class="p">,</span> <span class="n">autoclose</span><span class="o">=</span><span class="n">autoclose</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/xarray/backends/netCDF4_.py:393,</span> in <span class="ni">NetCDF4DataStore.__init__</span><span class="nt">(self, manager, group, mode, lock, autoclose)</span>
+<span class="g g-Whitespace">    </span><span class="mi">391</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group</span> <span class="o">=</span> <span class="n">group</span>
+<span class="g g-Whitespace">    </span><span class="mi">392</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
+<span class="ne">--&gt; </span><span class="mi">393</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">data_model</span>
+<span class="g g-Whitespace">    </span><span class="mi">394</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="o">.</span><span class="n">filepath</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">395</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_remote</span> <span class="o">=</span> <span class="n">is_remote_uri</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filename</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/xarray/backends/netCDF4_.py:461,</span> in <span class="ni">NetCDF4DataStore.ds</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">459</span> <span class="nd">@property</span>
+<span class="g g-Whitespace">    </span><span class="mi">460</span> <span class="k">def</span><span class="w"> </span><span class="nf">ds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">461</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acquire</span><span class="p">()</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/xarray/backends/netCDF4_.py:455,</span> in <span class="ni">NetCDF4DataStore._acquire</span><span class="nt">(self, needs_lock)</span>
+<span class="g g-Whitespace">    </span><span class="mi">454</span> <span class="k">def</span><span class="w"> </span><span class="nf">_acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">needs_lock</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">455</span>     <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="o">.</span><span class="n">acquire_context</span><span class="p">(</span><span class="n">needs_lock</span><span class="p">)</span> <span class="k">as</span> <span class="n">root</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">456</span>         <span class="n">ds</span> <span class="o">=</span> <span class="n">_nc4_require_group</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">457</span>     <span class="k">return</span> <span class="n">ds</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/contextlib.py:137,</span> in <span class="ni">_GeneratorContextManager.__enter__</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">135</span> <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span>
+<span class="g g-Whitespace">    </span><span class="mi">136</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">137</span>     <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">138</span> <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">139</span>     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;generator didn&#39;t yield&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/xarray/backends/file_manager.py:199,</span> in <span class="ni">CachingFileManager.acquire_context</span><span class="nt">(self, needs_lock)</span>
+<span class="g g-Whitespace">    </span><span class="mi">196</span> <span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+<span class="g g-Whitespace">    </span><span class="mi">197</span> <span class="k">def</span><span class="w"> </span><span class="nf">acquire_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">needs_lock</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">198</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;Context manager for acquiring a file.&quot;&quot;&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">199</span>     <span class="n">file</span><span class="p">,</span> <span class="n">cached</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acquire_with_cache_info</span><span class="p">(</span><span class="n">needs_lock</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">200</span>     <span class="k">try</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">201</span>         <span class="k">yield</span> <span class="n">file</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.10/x64/lib/python3.12/site-packages/xarray/backends/file_manager.py:217,</span> in <span class="ni">CachingFileManager._acquire_with_cache_info</span><span class="nt">(self, needs_lock)</span>
+<span class="g g-Whitespace">    </span><span class="mi">215</span>     <span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">216</span>     <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span>
+<span class="ne">--&gt; </span><span class="mi">217</span> <span class="n">file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opener</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">218</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">==</span> <span class="s2">&quot;w&quot;</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">219</span>     <span class="c1"># ensure file doesn&#39;t get overridden when opened again</span>
+<span class="g g-Whitespace">    </span><span class="mi">220</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span>
+
+<span class="nn">File src/netCDF4/_netCDF4.pyx:2521,</span> in <span class="ni">netCDF4._netCDF4.Dataset.__init__</span><span class="nt">()</span>
+
+<span class="nn">File src/netCDF4/_netCDF4.pyx:2158,</span> in <span class="ni">netCDF4._netCDF4._ensure_nc_success</span><span class="nt">()</span>
+
+<span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;/home/runner/work/pypsa-workshop/pypsa-workshop/pypsa-workshop/resources/base.nc&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>PyPSA calculates the line parameters just before the model is solved. If we want to see the underlying impedance <span class="math notranslate nohighlight">\(r\)</span>, reactance <span class="math notranslate nohighlight">\(x\)</span>, and susceptance <span class="math notranslate nohighlight">\(b\)</span>, we can trigger the calculation, manually.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span><span class="o">.</span><span class="n">calculate_dependent_values</span><span class="p">()</span>
+<span class="n">n</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="s2">&quot;i_nom&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">s_nom</span> <span class="o">/</span> <span class="n">n</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">v_nom</span> <span class="o">/</span> <span class="n">n</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">num_parallel</span><span class="p">)</span><span class="o">.</span><span class="n">div</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="p">)</span>  <span class="c1"># kA</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>So how did this work? Underneath, PyPSA maps each line to a library of built-in standard line types to obtain per line type, per km values.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">line_types</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">AC line types in the base network:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AC Line types: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We import a helper function to visualise the detailed network, interactively.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_geometries</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create GeoDataFrames for different network components with specified coordinate reference system (CRS).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        network (PyPSA Network): The network object containing buses, lines, links, converters, and transformers data.</span>
+<span class="sd">        is_converter (bool): Boolean that specifies if link element is a converter.</span>
+<span class="sd">        crs (str, optional): Coordinate reference system to be used for the GeoDataFrames. Defaults to GEO_CRS.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple: A tuple containing the following GeoDataFrames:</span>
+<span class="sd">        - buses (GeoDataFrame): GeoDataFrame containing bus data with geometries.</span>
+<span class="sd">        - lines (GeoDataFrame): GeoDataFrame containing line data with geometries.</span>
+<span class="sd">        - links (GeoDataFrame): GeoDataFrame containing link data with geometries.</span>
+<span class="sd">        - converters (GeoDataFrame): GeoDataFrame containing converter data with geometries.</span>
+<span class="sd">        - transformers (GeoDataFrame): GeoDataFrame containing transformer data with geometries.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">shapely.wkt</span><span class="w"> </span><span class="kn">import</span> <span class="n">loads</span>
+
+    <span class="n">crs</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">crs</span>
+
+    <span class="n">network</span><span class="o">.</span><span class="n">buses</span><span class="p">[</span><span class="s2">&quot;dc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">buses</span><span class="p">[</span><span class="s2">&quot;carrier&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">({</span><span class="s2">&quot;DC&quot;</span><span class="p">:</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="s2">&quot;AC&quot;</span><span class="p">:</span> <span class="s2">&quot;f&quot;</span><span class="p">})</span>
+    <span class="n">buses</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">buses</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()[</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;Bus&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;v_nom&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;dc&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;symbol&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;under_construction&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;geometry&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">]</span>
+    <span class="n">buses</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">buses</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">loads</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">buses</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">buses</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="s2">&quot;geometry&quot;</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span>
+
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()[</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;Line&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bus0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bus1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;v_nom&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;i_nom&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;num_parallel&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;s_nom&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;r&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;x&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;b&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;length&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;underground&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;under_construction&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tags&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;geometry&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">]</span>
+    <span class="c1"># Create shapely linestring from geometry column</span>
+    <span class="n">lines</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">loads</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="s2">&quot;geometry&quot;</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span>
+
+    <span class="n">is_converter</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;conv&quot;</span><span class="p">)</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">network</span><span class="o">.</span><span class="n">links</span><span class="p">[</span><span class="o">~</span><span class="n">is_converter</span><span class="p">]</span>
+        <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;voltage&quot;</span><span class="p">:</span> <span class="s2">&quot;v_nom&quot;</span><span class="p">})[</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;Link&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;bus0&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;bus1&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;v_nom&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;p_nom&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;length&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;underground&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;under_construction&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;tags&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;geometry&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">links</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">links</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">loads</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">links</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="s2">&quot;geometry&quot;</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span>
+
+    <span class="n">converters</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">network</span><span class="o">.</span><span class="n">links</span><span class="p">[</span><span class="n">is_converter</span><span class="p">]</span>
+        <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;voltage&quot;</span><span class="p">:</span> <span class="s2">&quot;v_nom&quot;</span><span class="p">})[</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;Link&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;bus0&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;bus1&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;v_nom&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;p_nom&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;geometry&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">converters</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">converters</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">loads</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">converters</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">converters</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="s2">&quot;geometry&quot;</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span>
+
+    <span class="n">transformers</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">transformers</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()[</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;Transformer&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bus0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bus1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;voltage_bus0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;voltage_bus1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;s_nom&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;geometry&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">]</span>
+    <span class="n">transformers</span><span class="p">[</span><span class="s2">&quot;geometry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">transformers</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">loads</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">transformers</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span><span class="n">transformers</span><span class="p">,</span> <span class="n">geometry</span><span class="o">=</span><span class="s2">&quot;geometry&quot;</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">crs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">buses</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">converters</span><span class="p">,</span> <span class="n">transformers</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>… and apply the function to the network:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">buses</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">links</span><span class="p">,</span> <span class="n">converters</span><span class="p">,</span> <span class="n">transformers</span> <span class="o">=</span> <span class="n">create_geometries</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="interactive-map">
+<h3>Interactive map<a class="headerlink" href="#interactive-map" title="Link to this heading">#</a></h3>
+<p>Using the PyPSA base network, let’s create an <strong>interactive map</strong>. To help visualise the underlying input data, we also import the cleaned substations.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stations_polygon</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;resources/stations_polygon.geojson&quot;</span><span class="p">)</span>
+<span class="n">buses_polygon</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;resources/buses_polygon.geojson&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Stacking everything together on a single folium map…</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">map</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">b_popup</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="nb">map</span> <span class="o">=</span> <span class="n">stations_polygon</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="n">popup</span><span class="o">=</span><span class="n">b_popup</span><span class="p">)</span>
+<span class="nb">map</span> <span class="o">=</span> <span class="n">buses_polygon</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;dc == False&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">popup</span><span class="o">=</span><span class="n">b_popup</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="nb">map</span><span class="p">)</span>
+<span class="nb">map</span> <span class="o">=</span> <span class="n">buses_polygon</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;dc == True&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;purple&quot;</span><span class="p">,</span> <span class="n">popup</span><span class="o">=</span><span class="n">b_popup</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="nb">map</span><span class="p">)</span>
+<span class="nb">map</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;v_nom &lt;= 230&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="n">popup</span><span class="o">=</span><span class="n">b_popup</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="nb">map</span><span class="p">)</span>
+<span class="nb">map</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;(v_nom &gt; 230) &amp; (v_nom &lt;= 330)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;orange&quot;</span><span class="p">,</span> <span class="n">popup</span><span class="o">=</span><span class="n">b_popup</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="nb">map</span>
+<span class="p">)</span>
+<span class="nb">map</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;(v_nom &gt; 330) &amp; (v_nom &lt;= 420)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;darkred&quot;</span><span class="p">,</span> <span class="n">popup</span><span class="o">=</span><span class="n">b_popup</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="nb">map</span>
+<span class="p">)</span>
+<span class="nb">map</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;v_nom &gt; 420&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;pink&quot;</span><span class="p">,</span> <span class="n">popup</span><span class="o">=</span><span class="n">b_popup</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="nb">map</span><span class="p">)</span>
+<span class="nb">map</span> <span class="o">=</span> <span class="n">links</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;purple&quot;</span><span class="p">,</span> <span class="n">popup</span><span class="o">=</span><span class="n">b_popup</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="nb">map</span><span class="p">)</span>
+<span class="nb">map</span> <span class="o">=</span> <span class="n">converters</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">popup</span><span class="o">=</span><span class="n">b_popup</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="nb">map</span><span class="p">)</span>
+<span class="nb">map</span> <span class="o">=</span> <span class="n">transformers</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;pink&quot;</span><span class="p">,</span> <span class="n">popup</span><span class="o">=</span><span class="n">b_popup</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="nb">map</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>How about locating the <a class="reference external" href="https://www.50hertz.com/de/Netz/Netzausbau/ProjekteanLand/BerlinerProjekte/KabeldiagonaleBerlin/">“Kabeldiagonale”</a> in Berlin?</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">map</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Questions</strong></p>
+<ol class="arabic simple">
+<li><p>What are its attributes (<span class="math notranslate nohighlight">\(i_{nom}^{max}\)</span>, <span class="math notranslate nohighlight">\(v_{nom}\)</span>, and <span class="math notranslate nohighlight">\(s_{nom}^{max}\)</span>)?</p></li>
+<li><p>How many circuits does it have?</p></li>
+<li><p>How long is the longest section within Berlin?</p></li>
+<li><p>What are the names of the two substations connected to this section?</p></li>
+</ol>
+<p>Alternatively, the PyPSA framework has a built-in <code class="docutils literal notranslate"><span class="pre">n.explore()</span></code> function based on folium and geopandas.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">components</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Line&quot;</span><span class="p">,</span> <span class="s2">&quot;Link&quot;</span><span class="p">]</span>
+<span class="n">n</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>50Hertz. <strong>Static grid model</strong>. <a class="reference external" href="https://www.50hertz.com/Transparency/GridData/Gridfigures/Staticgridmodel/">https://www.50hertz.com/Transparency/GridData/Gridfigures/Staticgridmodel/</a> (2022).</p></li>
+<li><p>Egerer, J. et al. <strong>Electricity sector data for policy-relevant modeling: Data documentation and applications to the German and European electricity markets</strong>. Research Report 72, DIW Data Documentation (2014).</p></li>
+<li><p>Egerer, J. <strong>Open Source Electricity Model for Germany (ELMOD-DE)</strong>. Data Documentation (2016).</p></li>
+<li><p>JAO. <strong>Static Grid Model</strong>. <a class="reference external" href="https://www.jao.eu/static-grid-model">https://www.jao.eu/static-grid-model</a> (2023).</p></li>
+<li><p>Hörsch, J., Hofmann, F., Schlachtberger, D. &amp; Brown, T. <strong>PyPSA-Eur: An open optimisation model of the European transmission system</strong>. Energy Strategy Reviews 22, 207–215, <a class="reference external" href="https://doi.org/10.1016/j.esr.2018.08.012">https://doi.org/10.1016/j.esr.2018.08.012</a> (2018).</p></li>
+<li><p>Hutcheon, N. &amp; Bialek, J. W. <strong>Updated and validated power flow model of the main continental European transmission network</strong>. In 2013 IEEE Grenoble Conference, 1–5, <a class="reference external" href="https://doi.org/10.1109/PTC.2013.6652178">https://doi.org/10.1109/PTC.2013.6652178</a> (2013).</p></li>
+<li><p>Medjroubi, W., Müller, U. P., Scharf, M., Matke, C. &amp; Kleinhans, D. <strong>Open Data in Power Grid Modelling: New Approaches Towards Transparent Grid Models</strong>. Energy Reports 3, 14–21, <a class="reference external" href="https://doi.org/10.1016/j.egyr.2016.12.001">https://doi.org/10.1016/j.egyr.2016.12.001</a> (2017).</p></li>
+<li><p>Mölder, F. et al. <strong>Sustainable data analysis with Snakemake</strong>. <a class="reference external" href="https://doi.org/10.12688/f1000research.29032.2">https://doi.org/10.12688/f1000research.29032.2</a> (2021).</p></li>
+<li><p><strong>OSMTGmod Documentation</strong> 0.1.0. <a class="github reference external" href="https://github.com/wupperinst/osmTGmod/blob/master/osmTGmod_documentation_0.1.0.pdf">wupperinst/osmTGmod</a> (2017).</p></li>
+<li><p>Xiong, B., Fioriti, D., Neumann, F., Riepin, I., Brown, T. <strong>Modelling the high-voltage grid using open data for Europe and beyond.</strong> Sci Data 12, 277. <a class="reference external" href="https://doi.org/10.1038/s41597-025-04550-7">https://doi.org/10.1038/s41597-025-04550-7</a> (2025).</p></li>
+<li><p>Xiong, B., Fioriti, D., Neumann, F., Riepin, I., Brown, T. <strong>Prebuilt Electricity Network for PyPSA-Eur based on OpenStreetMap Data (0.6) [Data set].</strong> Zenodo. <a class="reference external" href="https://doi.org/10.5281/zenodo.14144752">https://doi.org/10.5281/zenodo.14144752</a> (2024).</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: ""
+        },
+        kernelOptions: {
+            name: "",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = ''</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="03-workshop-pypsa-sc-expansion.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Advanced models in <code class="docutils literal notranslate"><span class="pre">pypsa</span></code>: capacity expansion planning with sector coupling</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="05-clustering-network.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Clustering the network</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#background">Background</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">Motivation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#benefits-of-our-implementation">Benefits of our implementation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reconstructing-the-european-high-voltage-grid-from-openstreetmap">Reconstructing the European high-voltage grid from OpenStreetMap</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#process-diagram">Process diagram</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bus-clustering">Bus clustering</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#validation-and-metrics">Validation and metrics</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exploring-the-data-base-network">Exploring the data (base network)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interactive-map">Interactive map</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Iegor Riepin, Bobby Xiong
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
