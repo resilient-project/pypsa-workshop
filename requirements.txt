@@ -19,3 +19,5 @@ ghp-import
 highspy>=1.7
 numexpr>2.8.5
 pre-commit
+geopandas
+shapely
