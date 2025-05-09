@@ -27,5 +27,8 @@ dependencies:
 - geopandas
 - shapely
 - requests
+- scikit-learn
+- folium
+- mapclassify
 - pip:
   - highspy

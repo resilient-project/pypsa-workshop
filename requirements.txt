@@ -22,3 +22,6 @@ pre-commit
 geopandas
 shapely
 requests
+scikit-learn
+folium
+mapclassify
