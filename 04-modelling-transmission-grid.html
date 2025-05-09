@@ -530,6 +530,7 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pypsa</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 </pre></div>
 </div>
 </div>
@@ -537,8 +538,26 @@ document.write(`
 <p>Let’s import the base network created from the above workflow.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">network_path</span> <span class="o">=</span> <span class="s2">&quot;resources/base.nc&quot;</span>
-<span class="n">n</span> <span class="o">=</span> <span class="n">pypsa</span><span class="o">.</span><span class="n">Network</span><span class="p">(</span><span class="n">network_path</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/resilient-project/pypsa-workshop/main/pypsa-workshop/resources/&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>To enable execution from Google Colab, we use requests to retrieve the network file. This detour is normally not needed for offline use.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">network</span> <span class="o">=</span> <span class="s2">&quot;base.nc&quot;</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">resources</span> <span class="o">+</span> <span class="n">network</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">pypsa</span><span class="o">.</span><span class="n">Network</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -602,7 +621,7 @@ AC Line types: [&#39;Al/St 240/40 2-bundle 220.0&#39;, &#39;Al/St 240/40 3-bundl
 </div>
 </div>
 </div>
-<p>We import a helper function to visualise the detailed network, interactively.</p>
+<p>We import a helper function to visualise the detailed network, interactively. Note that you do not need to understand the function <code class="docutils literal notranslate"><span class="pre">create_geometries()</span></code>. It is only needed to create shapely geometries from the network data.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_geometries</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
@@ -739,8 +758,8 @@ AC Line types: [&#39;Al/St 240/40 2-bundle 220.0&#39;, &#39;Al/St 240/40 3-bundl
 <p>Using the PyPSA base network, let’s create an <strong>interactive map</strong>. To help visualise the underlying input data, we also import the cleaned substations.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stations_polygon</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;resources/stations_polygon.geojson&quot;</span><span class="p">)</span>
-<span class="n">buses_polygon</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;resources/buses_polygon.geojson&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stations_polygon</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">resources</span> <span class="o">+</span> <span class="s2">&quot;stations_polygon.geojson&quot;</span><span class="p">)</span>
+<span class="n">buses_polygon</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">resources</span> <span class="o">+</span> <span class="s2">&quot;buses_polygon.geojson&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -781,7 +800,7 @@ AC Line types: [&#39;Al/St 240/40 2-bundle 220.0&#39;, &#39;Al/St 240/40 3-bundl
 <span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
 
 <span class="ne">ImportError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="nb">map</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">b_popup</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="ne">----&gt; </span><span class="mi">4</span> <span class="nb">map</span> <span class="o">=</span> <span class="n">stations_polygon</span><span class="o">.</span><span class="n">explore</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="n">popup</span><span class="o">=</span><span class="n">b_popup</span><span class="p">)</span>
